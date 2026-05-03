@@ -1,2 +1,10 @@
-./obj/
-./bin/
+obj/
+bin/
+*.user
+*.suo
+.vs/
+.vscode/
+packages/
+TestResults/
+appsettings.Development.json
+secrets.json
