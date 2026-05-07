@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "VmzAQaiHCnI=",
+  "dgSpecHash": "IQiNyHI5Jgo=",
   "success": true,
   "projectFilePath": "/home/xenon/Programming/DotNet/Connections.Api/Connections.Api.csproj",
   "expectedPackageFiles": [
@@ -36,15 +36,5 @@
     "/home/xenon/.nuget/packages/system.composition.runtime/9.0.0/system.composition.runtime.9.0.0.nupkg.sha512",
     "/home/xenon/.nuget/packages/system.composition.typedparts/9.0.0/system.composition.typedparts.9.0.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1900",
-      "level": "Warning",
-      "message": "Error occurred while getting package vulnerability data: The SSL connection could not be established, see inner exception.",
-      "projectPath": "/home/xenon/Programming/DotNet/Connections.Api/Connections.Api.csproj",
-      "warningLevel": 1,
-      "filePath": "/home/xenon/Programming/DotNet/Connections.Api/Connections.Api.csproj",
-      "targetGraphs": []
-    }
-  ]
+  "logs": []
 }

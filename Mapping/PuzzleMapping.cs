@@ -5,15 +5,18 @@ namespace Connecions.Api.Mapping;
 
 public static class PuzzleMapping
 {
-    public static PlayerPuzzleDto ToPlayerPuzzleDto(this Puzzle puzzle)
-    {
-        return new PlayerPuzzleDto(puzzle.Id, puzzle.Categories.SelectMany(c => c.Words)
-                .OrderBy(_ => Guid.NewGuid())
-                .ToList());
-    }
 
     public static AdminPuzzleDto ToAdminPuzzleDto(this Puzzle puzzle)
     {
-        return new AdminPuzzleDto(puzzle.Id, puzzle.Categories);
+        return new AdminPuzzleDto(
+                puzzle.Id,
+                puzzle.LastUsed,
+                puzzle.Categories.Select(c => new AdminCategoryDto(
+                        c.Id,
+                        c.Name,
+                        c.Words.Select(w => new AdminWordDto(w.Id, w.Text)).ToList()
+                        )).ToList()
+                );
     }
 }
+

@@ -1,0 +1,62 @@
+### 
+
+@base = http://localhost:5000
+
+
+### Create a new puzzle
+
+POST {{base}}/puzzles HTTP/1.1
+Content-Type: application/json
+
+{
+  "categories": [
+    {
+      "name": "Famous Scientists",
+      "words": [
+        "Newton",
+        "Einstein",
+        "Curie",
+        "Darwin"
+      ]
+    },
+    {
+      "name": "Capital Cities",
+      "words": [
+        "London",
+        "Paris",
+        "Tokyo",
+        "Berlin"
+      ]
+    },
+    {
+      "name": "Programming Languages",
+      "words": [
+        "C#",
+        "Python",
+        "JavaScript",
+        "Rust"
+      ]
+    },
+    {
+      "name": "Musical Instruments",
+      "words": [
+        "Guitar",
+        "Piano",
+        "Violin",
+        "Drums"
+      ]
+    }
+  ]
+}
+
+
+### Get all puzzles (admin list)
+
+GET {{base}}/puzzles HTTP/1.1
+Accept: application/json
+
+
+### Get a single puzzle (replace {id} with the one from creation)
+
+GET {{base}}/puzzles/1 HTTP/1.1
+Accept: application/json

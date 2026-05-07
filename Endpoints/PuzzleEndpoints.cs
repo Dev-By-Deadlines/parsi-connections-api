@@ -1,7 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Connecions.Api.Mapping;
-using Connecions.Api.Data;
-using Connecions.Api.Dtos;
 
 namespace Connecions.Api.Endpoints;
 
@@ -9,15 +6,14 @@ public static class PuzzleEndpoints
 {
     public static void MapPuzzleEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/puzzle");
+        const string GetPuzzleEndpointName = "GetPuzzle";
 
-        group.MapGet("/", AdminGetPuzzles);
+        var group = app.MapGroup("/puzzles");
 
-        async Task<IResult> AdminGetPuzzles(ConnectionsContext dbContext)
-        {
-            var puzzles = await dbContext.Puzzles.ToListAsync();
-            var dtos = puzzles.Select(p => p.ToAdminPuzzleDto()).ToList();
-            return Results.Ok(dtos);
-        }
+        // group.MapGet("/", GetPuzzles);
+        // group.MapGet("/{id}", GetPuzzle).WithName(GetPuzzleEndpointName);
+        // group.MapPost("/", CreatePuzzle);
+        //
+        // group.MapGet("/daily", GetDailyPuzzle);
     }
 }
