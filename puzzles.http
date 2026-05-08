@@ -1,6 +1,4 @@
-### 
-
-@base = http://localhost:5000
+### @base = http://localhost:5000
 
 
 ### Create a new puzzle
@@ -13,50 +11,82 @@ Content-Type: application/json
     {
       "name": "Famous Scientists",
       "words": [
-        "Newton",
-        "Einstein",
-        "Curie",
-        "Darwin"
+        {
+          "text": "Newton"
+        },
+        {
+          "text": "Einstein"
+        },
+        {
+          "text": "Curie"
+        },
+        {
+          "text": "Darwin"
+        }
       ]
     },
     {
       "name": "Capital Cities",
       "words": [
-        "London",
-        "Paris",
-        "Tokyo",
-        "Berlin"
+        {
+          "text": "London"
+        },
+        {
+          "text": "Paris"
+        },
+        {
+          "text": "Tokyo"
+        },
+        {
+          "text": "Berlin"
+        }
       ]
     },
     {
       "name": "Programming Languages",
       "words": [
-        "C#",
-        "Python",
-        "JavaScript",
-        "Rust"
+        {
+          "text": "C#"
+        },
+        {
+          "text": "Python"
+        },
+        {
+          "text": "JavaScript"
+        },
+        {
+          "text": "Rust"
+        }
       ]
     },
     {
       "name": "Musical Instruments",
       "words": [
-        "Guitar",
-        "Piano",
-        "Violin",
-        "Drums"
+        {
+          "text": "Guitar"
+        },
+        {
+          "text": "Piano"
+        },
+        {
+          "text": "Violin"
+        },
+        {
+          "text": "Drums"
+        }
       ]
     }
   ]
 }
 
 
-### Get all puzzles (admin list)
+### Get all puzzles (admin overview)
 
 GET {{base}}/puzzles HTTP/1.1
 Accept: application/json
 
 
-### Get a single puzzle (replace {id} with the one from creation)
+### Get a single puzzle (replace 1 with the actual id from creation response)
 
 GET {{base}}/puzzles/1 HTTP/1.1
 Accept: application/json
