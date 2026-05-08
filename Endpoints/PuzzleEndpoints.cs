@@ -11,10 +11,13 @@ public static class PuzzleEndpoints
     {
         var group = app.MapGroup("/puzzles");
 
+        // ------------Admin-----------------------------------------------------------
         group.MapGet("/", GetPuzzlesHandler.Handler);
         group.MapGet("/{id}", GetPuzzleHandler.Handler).WithName(GetPuzzleEndpointName);
         group.MapPost("/", CreatePuzzleHandler.Handler);
         group.MapDelete("/{id}", DeletePuzzleHandler.Handler);
-        // group.MapGet("/daily", GetDailyPuzzle);
+
+        // ------------Player-----------------------------------------------------------
+        group.MapGet("/daily", GetDailyPuzzleHandler.Handler);
     }
 }

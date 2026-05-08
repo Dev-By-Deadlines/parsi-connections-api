@@ -8,4 +8,5 @@ public class ConnectionsContext(DbContextOptions<ConnectionsContext> options) : 
     public DbSet<Puzzle> Puzzles => Set<Puzzle>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Word> Words => Set<Word>();
+    public DbSet<DailyPuzzle> DailyPuzzle => Set<DailyPuzzle>();
 }
