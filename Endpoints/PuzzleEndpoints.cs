@@ -1,89 +1,20 @@
-using Connecions.Api.Data;
-using Connecions.Api.Dtos;
-using Connecions.Api.Mapping;
-using Connecions.Api.Models;
+using Connecions.Api.Endpoints.PuzzleHandlers;
 using Microsoft.EntityFrameworkCore;
 
 namespace Connecions.Api.Endpoints;
 
 public static class PuzzleEndpoints
 {
+    public const string GetPuzzleEndpointName = "GetPuzzle";
+
     public static void MapPuzzleEndpoints(this WebApplication app)
     {
-        const string GetPuzzleEndpointName = "GetPuzzle";
-
         var group = app.MapGroup("/puzzles");
 
-        group.MapGet("/", GetPuzzles);
-        group.MapGet("/{id}", GetPuzzle).WithName(GetPuzzleEndpointName);
-        group.MapPost("/", CreatePuzzle);
-        group.MapDelete("/{id}", DeletePuzzle);
+        group.MapGet("/", GetPuzzlesHandler.Handler);
+        group.MapGet("/{id}", GetPuzzleHandler.Handler).WithName(GetPuzzleEndpointName);
+        group.MapPost("/", CreatePuzzleHandler.Handler);
+        group.MapDelete("/{id}", DeletePuzzleHandler.Handler);
         // group.MapGet("/daily", GetDailyPuzzle);
-
-        async Task<IResult> GetPuzzles(ConnectionsContext dbContext)
-        {
-            var puzzles = await dbContext.Puzzles
-                .Include(p => p.Categories)
-                .ThenInclude(c => c.Words)
-                .ToListAsync();
-
-            var dtos = puzzles.Select(p => p.ToAdminPuzzleDto()).ToList();
-
-            return Results.Ok(dtos);
-        }
-
-        async Task<IResult> GetPuzzle(int id, ConnectionsContext dbContext)
-        {
-            var puzzle = await dbContext.Puzzles
-                .Include(p => p.Categories)
-                .ThenInclude(c => c.Words)
-                .FirstOrDefaultAsync(p => p.Id == id);
-
-            if (puzzle is null) return Results.NotFound();
-
-            return Results.Ok(puzzle.ToAdminPuzzleDto());
-        }
-
-        async Task<IResult> CreatePuzzle(CreatePuzzleDto createPuzzleDto, ConnectionsContext dbContext)
-        {
-            var puzzle = new Puzzle()
-            {
-                Categories = createPuzzleDto.Categories.Select(c => new Category()
-                {
-                    Name = c.Name,
-                    Words = c.Words.Select(w => new Word()
-                    {
-                        Text = w.Text
-                    }).ToList(),
-                }).ToList()
-            };
-
-            foreach (var category in puzzle.Categories)
-            {
-                category.Puzzle = puzzle;
-                foreach (var word in category.Words)
-                {
-                    word.Category = category;
-                }
-            }
-
-            dbContext.Puzzles.Add(puzzle);
-            await dbContext.SaveChangesAsync();
-
-            var puzzleDto = puzzle.ToAdminPuzzleDto();
-
-            return Results.CreatedAtRoute(GetPuzzleEndpointName, new { id = puzzle.Id }, puzzleDto);
-        }
-
-        async Task<IResult> DeletePuzzle(int id, ConnectionsContext dbContext)
-        {
-            var puzzle = await dbContext.Puzzles.FindAsync(id);
-            if (puzzle is null) return Results.NotFound();
-
-            dbContext.Remove(puzzle);
-            await dbContext.SaveChangesAsync();
-
-            return Results.NoContent();
-        }
     }
 }
