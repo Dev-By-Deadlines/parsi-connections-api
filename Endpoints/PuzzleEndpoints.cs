@@ -17,7 +17,7 @@ public static class PuzzleEndpoints
         group.MapGet("/", GetPuzzles);
         group.MapGet("/{id}", GetPuzzle).WithName(GetPuzzleEndpointName);
         group.MapPost("/", CreatePuzzle);
-        //
+        group.MapDelete("/{id}", DeletePuzzle);
         // group.MapGet("/daily", GetDailyPuzzle);
 
         async Task<IResult> GetPuzzles(ConnectionsContext dbContext)
@@ -54,9 +54,18 @@ public static class PuzzleEndpoints
                     Words = c.Words.Select(w => new Word()
                     {
                         Text = w.Text
-                    }).ToList()
+                    }).ToList(),
                 }).ToList()
             };
+
+            foreach (var category in puzzle.Categories)
+            {
+                category.Puzzle = puzzle;
+                foreach (var word in category.Words)
+                {
+                    word.Category = category;
+                }
+            }
 
             dbContext.Puzzles.Add(puzzle);
             await dbContext.SaveChangesAsync();
@@ -64,6 +73,17 @@ public static class PuzzleEndpoints
             var puzzleDto = puzzle.ToAdminPuzzleDto();
 
             return Results.CreatedAtRoute(GetPuzzleEndpointName, new { id = puzzle.Id }, puzzleDto);
+        }
+
+        async Task<IResult> DeletePuzzle(int id, ConnectionsContext dbContext)
+        {
+            var puzzle = await dbContext.Puzzles.FindAsync(id);
+            if (puzzle is null) return Results.NotFound();
+
+            dbContext.Remove(puzzle);
+            await dbContext.SaveChangesAsync();
+
+            return Results.NoContent();
         }
     }
 }

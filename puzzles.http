@@ -1,4 +1,6 @@
-### @base = http://localhost:5000
+### 
+
+@base = http://localhost:5000
 
 
 ### Create a new puzzle
@@ -89,4 +91,10 @@ Accept: application/json
 ### Get a single puzzle (replace 1 with the actual id from creation response)
 
 GET {{base}}/puzzles/1 HTTP/1.1
+Accept: application/json
+
+
+### 
+
+DELETE {{base}}/puzzles/1 HTTP/1.1
 Accept: application/json
