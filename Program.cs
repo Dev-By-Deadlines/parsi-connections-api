@@ -41,11 +41,7 @@ app.UseRateLimiter();
 app.UseCors();
 app.MapPuzzleEndpoints();
 app.MapOpenApi();
-
-if (app.Environment.IsDevelopment())
-{
-    app.MapScalarApiReference();
-}
+app.MapScalarApiReference();
 
 using (var scope = app.Services.CreateScope())
 {
