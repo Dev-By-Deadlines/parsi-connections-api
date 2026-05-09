@@ -9,3 +9,4 @@ TestResults/
 appsettings.Development.json
 secrets.json
 publish/
+Connections.db
