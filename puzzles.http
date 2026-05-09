@@ -96,7 +96,7 @@ Accept: application/json
 
 ### Delete a puzzle (replace 3 with id)
 
-DELETE {{base}}/puzzles/3 HTTP/1.1
+DELETE {{base}}/puzzles/12 HTTP/1.1
 
 
 ### Get today's daily puzzle
@@ -115,5 +115,24 @@ Content-Type: application/json
     "Drums",
     "Violin",
     "Guitar"
+  ]
+}
+
+
+### 
+
+POST {{base}}/puzzles HTTP/1.1
+Content-Type: application/json
+
+{
+  "categories": [
+    {
+      "name": "",
+      "words": [
+        {
+          "text": ""
+        }
+      ]
+    }
   ]
 }

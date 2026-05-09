@@ -1,5 +1,3 @@
-using Connecions.Api.Models;
-
 namespace Connecions.Api.Dtos;
 
 public record CreateCategoryDto(

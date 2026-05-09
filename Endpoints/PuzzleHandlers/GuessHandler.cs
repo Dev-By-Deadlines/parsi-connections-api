@@ -1,18 +1,23 @@
 using Connecions.Api.Data;
 using Connecions.Api.Dtos;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Connecions.Api.Endpoints.PuzzleHandlers;
 
 public static class GuessHandler
 {
-    public static async Task<IResult> Handler(int id, GuessDto guess, ConnectionsContext dbContext)
+    public static async Task<IResult> Handler(int id, IValidator<GuessDto> validator, GuessDto guess, ConnectionsContext dbContext)
     {
-        if (guess.Words.Count != 4)
-            return Results.BadRequest("Exactly 4 words are required.");
-
-        if (guess.Words.Distinct().Count() != 4)
-            return Results.BadRequest("Guess must contain four different words.");
+        var validationResult = await validator.ValidateAsync(guess);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(
+                    validationResult.Errors
+                    .GroupBy(e => e.PropertyName)
+                    .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray())
+                    );
+        }
 
         var puzzle = await dbContext.Puzzles
             .Include(p => p.Categories)
