@@ -19,5 +19,6 @@ public static class PuzzleEndpoints
 
         // ------------Player-----------------------------------------------------------
         group.MapGet("/daily", GetDailyPuzzleHandler.Handler);
+        group.MapPost("{id}/guess", GuessHandler.Handler);
     }
 }
