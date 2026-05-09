@@ -9,4 +9,11 @@ public class ConnectionsContext(DbContextOptions<ConnectionsContext> options) : 
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Word> Words => Set<Word>();
     public DbSet<DailyPuzzle> DailyPuzzle => Set<DailyPuzzle>();
+
+    protected override void OnModelCreating(ModelBuilder ModelBuilder)
+    {
+        ModelBuilder.Entity<DailyPuzzle>()
+            .HasIndex(dp => dp.Date)
+            .IsUnique();
+    }
 }
