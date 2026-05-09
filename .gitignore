@@ -8,3 +8,4 @@ packages/
 TestResults/
 appsettings.Development.json
 secrets.json
+publish/
