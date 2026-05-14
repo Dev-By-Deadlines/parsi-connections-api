@@ -14,6 +14,10 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreatePuzzleDtoValidator>()
 
 builder.Services.AddOpenApi();
 
+var adminKey = builder.Configuration["ApiKeys:AdminKey"]
+    ?? Environment.GetEnvironmentVariable("AdmingApiKey")
+    ?? throw new InvalidOperationException("Admin API key not configured.");
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -39,7 +43,7 @@ var app = builder.Build();
 
 app.UseRateLimiter();
 app.UseCors();
-app.MapPuzzleEndpoints();
+app.MapPuzzleEndpoints(adminKey);
 app.MapOpenApi();
 app.MapScalarApiReference();
 
