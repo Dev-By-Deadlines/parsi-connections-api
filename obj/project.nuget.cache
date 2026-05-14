@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "wKsufh2oaYo=",
+  "dgSpecHash": "mEDNBTD2KZ4=",
   "success": true,
   "projectFilePath": "/home/xenon/Programming/DotNet/Connections.Api/Connections.Api.csproj",
   "expectedPackageFiles": [
@@ -43,10 +43,17 @@
     "/home/xenon/.nuget/packages/system.composition.convention/9.0.0/system.composition.convention.9.0.0.nupkg.sha512",
     "/home/xenon/.nuget/packages/system.composition.hosting/9.0.0/system.composition.hosting.9.0.0.nupkg.sha512",
     "/home/xenon/.nuget/packages/system.composition.runtime/9.0.0/system.composition.runtime.9.0.0.nupkg.sha512",
-    "/home/xenon/.nuget/packages/system.composition.typedparts/9.0.0/system.composition.typedparts.9.0.0.nupkg.sha512",
-    "/home/xenon/.nuget/packages/microsoft.netcore.app.runtime.linux-x64/10.0.4/microsoft.netcore.app.runtime.linux-x64.10.0.4.nupkg.sha512",
-    "/home/xenon/.nuget/packages/microsoft.aspnetcore.app.runtime.linux-x64/10.0.4/microsoft.aspnetcore.app.runtime.linux-x64.10.0.4.nupkg.sha512",
-    "/home/xenon/.nuget/packages/microsoft.netcore.app.host.linux-x64/10.0.4/microsoft.netcore.app.host.linux-x64.10.0.4.nupkg.sha512"
+    "/home/xenon/.nuget/packages/system.composition.typedparts/9.0.0/system.composition.typedparts.9.0.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "message": "Error occurred while getting package vulnerability data: The SSL connection could not be established, see inner exception.",
+      "projectPath": "/home/xenon/Programming/DotNet/Connections.Api/Connections.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "/home/xenon/Programming/DotNet/Connections.Api/Connections.Api.csproj",
+      "targetGraphs": []
+    }
+  ]
 }

@@ -25,7 +25,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "Persian Connections API",
         Version = "v1",
-        Description = "Player endpoints for the Persian Connections game."
+        Description = "Endpoints for the Persian Connections game."
     });
 
     c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme

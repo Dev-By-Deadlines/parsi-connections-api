@@ -7,41 +7,56 @@ namespace Connecions.Api.Endpoints.PuzzleHandlers;
 
 public static class Guess
 {
-    public static async Task<IResult> Handler(int id, IValidator<GuessDto> validator, GuessDto guess, ConnectionsContext dbContext)
+    public static async Task<IResult> Handler(
+        int id,
+        IValidator<GuessDto> validator,
+        GuessDto guess,
+        ConnectionsContext dbContext)
     {
         var validationResult = await validator.ValidateAsync(guess);
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(
-                    validationResult.Errors
+                validationResult.Errors
                     .GroupBy(e => e.PropertyName)
-                    .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray())
-                    );
+                    .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray()));
         }
 
         var puzzle = await dbContext.Puzzles
             .Include(p => p.Categories)
-            .ThenInclude(c => c.Words)
+                .ThenInclude(c => c.Words)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (puzzle is null)
             return Results.NotFound("Puzzle not found.");
 
-        var guessSet = new HashSet<string>(guess.Words);
-
-        var match = puzzle.Categories.FirstOrDefault(c =>
-            new HashSet<string>(c.Words.Select(w => w.Text))
-                .SetEquals(guessSet));
-
-        if (match is not null)
+        foreach (var category in puzzle.Categories)
         {
-            return Results.Ok(new GuessResponseDto(
-                true,
-                match.Name,
-                match.Words.Select(w => w.Text).ToList()
-            ));
+            var categoryWordSet = new HashSet<string>(category.Words.Select(w => w.Text));
+            int commonCount = guess.Words.Count(w => categoryWordSet.Contains(w));
+
+            if (commonCount == 4)
+            {
+                return Results.Ok(new GuessResponseDto(
+                    Correct: true,
+                    CategoryName: category.Name,
+                    SolvedWords: category.Words.Select(w => w.Text).ToList(),
+                    OneAway: false));
+            }
+            else if (commonCount == 3)
+            {
+                return Results.Ok(new GuessResponseDto(
+                    Correct: false,
+                    CategoryName: null,
+                    SolvedWords: null,
+                    OneAway: true));
+            }
         }
 
-        return Results.Ok(new GuessResponseDto(false, null, null));
+        return Results.Ok(new GuessResponseDto(
+            Correct: false,
+            CategoryName: null,
+            SolvedWords: null,
+            OneAway: false));
     }
 }
