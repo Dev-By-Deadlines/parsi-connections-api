@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Connecions.Api.Endpoints.PuzzleHandlers;
 
-public static class GuessHandler
+public static class Guess
 {
     public static async Task<IResult> Handler(int id, IValidator<GuessDto> validator, GuessDto guess, ConnectionsContext dbContext)
     {

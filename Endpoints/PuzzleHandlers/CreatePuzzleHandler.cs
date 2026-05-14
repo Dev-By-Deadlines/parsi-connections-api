@@ -3,11 +3,10 @@ using Connecions.Api.Dtos;
 using Connecions.Api.Mapping;
 using Connecions.Api.Models;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 
 namespace Connecions.Api.Endpoints.PuzzleHandlers;
 
-public static class CreatePuzzleHandler
+public static class CreatePuzzle
 {
     public static async Task<IResult> Handler(CreatePuzzleDto createPuzzleDto, IValidator<CreatePuzzleDto> validator, ConnectionsContext dbContext)
     {

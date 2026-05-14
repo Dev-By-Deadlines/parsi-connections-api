@@ -2,9 +2,9 @@
 set -e
 
 # Configuration
-VPS_ALIAS="tehran"                   # your SSH config host name
-DEPLOY_DIR="/root/connections-api"   # where the app lives on the VPS
-SERVICE_NAME="connections"               # systemd service name
+VPS_ALIAS="tehran"                 # your SSH config host name
+DEPLOY_DIR="/root/connections-api" # where the app lives on the VPS
+SERVICE_NAME="connections"         # systemd service name
 
 echo "🔨 Publishing self‑contained app for linux‑x64..."
 dotnet publish -c Release -r linux-x64 --self-contained -o ./publish

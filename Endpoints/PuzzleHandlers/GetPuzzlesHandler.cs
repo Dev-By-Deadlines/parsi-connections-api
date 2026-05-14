@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Connecions.Api.Endpoints.PuzzleHandlers;
 
-public static class GetPuzzlesHandler
+public static class GetPuzzles
 {
     public async static Task<IResult> Handler(ConnectionsContext dbContext)
     {

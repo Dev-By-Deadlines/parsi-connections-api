@@ -1,23 +1,52 @@
 using Connecions.Api.Data;
 using Connecions.Api.Endpoints;
 using Connecions.Api.Validators;
-using Scalar.AspNetCore;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<ConnectionsContext>(options =>
-        options.UseSqlite(builder.Configuration.GetConnectionString("Connections")));
 
+// Database
+builder.Services.AddDbContext<ConnectionsContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("Connections")));
+
+// Validation
 builder.Services.AddValidatorsFromAssemblyContaining<CreatePuzzleDtoValidator>();
 
-builder.Services.AddOpenApi();
+// Swagger – add Endpoints API Explorer first
+builder.Services.AddEndpointsApiExplorer();
 
+// Swagger
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.OpenApiInfo
+    {
+        Title = "Persian Connections API",
+        Version = "v1",
+        Description = "Player endpoints for the Persian Connections game."
+    });
+
+    c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+    {
+        Description = "Enter your admin API key",
+        Name = "X-Api-Key",          // The header name your filter expects
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+    });
+    c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("ApiKey", document)] = new List<string>()
+    });
+});
+
+// Admin API key
 var adminKey = builder.Configuration["ApiKeys:AdminKey"]
-    ?? Environment.GetEnvironmentVariable("AdmingApiKey")
+    ?? Environment.GetEnvironmentVariable("AdminApiKey")  // fixed typo
     ?? throw new InvalidOperationException("Admin API key not configured.");
 
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -26,6 +55,7 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader());
 });
 
+// Rate limiting
 builder.Services.AddRateLimiter(options =>
 {
     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(ctx =>
@@ -41,12 +71,20 @@ builder.Services.AddRateLimiter(options =>
 
 var app = builder.Build();
 
+// Middleware pipeline
 app.UseRateLimiter();
 app.UseCors();
-app.MapPuzzleEndpoints(adminKey);
-app.MapOpenApi();
-app.MapScalarApiReference();
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Persian Connections API v1");
+    c.RoutePrefix = "docs";
+});
 
+// Map endpoints (player + admin)
+app.MapPuzzleEndpoints(adminKey);
+
+// Auto-migrate database
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ConnectionsContext>();

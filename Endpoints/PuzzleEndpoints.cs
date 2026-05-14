@@ -13,20 +13,20 @@ public static class PuzzleEndpoints
         var adminFilter = new ApiKeyAuthFilter(amdinKey);
 
         // ------------Admin-----------------------------------------------------------
-        group.MapGet("/", GetPuzzlesHandler.Handler)
+        group.MapGet("/", GetPuzzles.Handler)
             .AddEndpointFilter(adminFilter);
 
-        group.MapGet("/{id}", GetPuzzleHandler.Handler).WithName(GetPuzzleEndpointName)
+        group.MapGet("/{id}", GetPuzzle.Handler).WithName(GetPuzzleEndpointName)
             .AddEndpointFilter(adminFilter);
 
-        group.MapPost("/", CreatePuzzleHandler.Handler)
+        group.MapPost("/", CreatePuzzle.Handler)
             .AddEndpointFilter(adminFilter);
 
-        group.MapDelete("/{id}", DeletePuzzleHandler.Handler)
+        group.MapDelete("/{id}", DeletePuzzle.Handler)
             .AddEndpointFilter(adminFilter);
 
         // ------------Player-----------------------------------------------------------
-        group.MapGet("/daily", GetDailyPuzzleHandler.Handler);
-        group.MapPost("{id}/guess", GuessHandler.Handler);
+        group.MapGet("/daily", GetDailyPuzzle.Handler);
+        group.MapPost("{id}/guess", Guess.Handler);
     }
 }

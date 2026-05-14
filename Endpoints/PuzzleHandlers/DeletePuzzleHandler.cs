@@ -1,9 +1,8 @@
 using Connecions.Api.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace Connecions.Api.Endpoints.PuzzleHandlers;
 
-public static class DeletePuzzleHandler
+public static class DeletePuzzle
 {
     public static async Task<IResult> Handler(int id, ConnectionsContext dbContext)
     {
