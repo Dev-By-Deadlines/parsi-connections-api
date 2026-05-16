@@ -10,3 +10,4 @@ appsettings.Development.json
 secrets.json
 publish/
 Connections.db
+seedPuzzles.http
