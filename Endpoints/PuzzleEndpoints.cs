@@ -25,6 +25,9 @@ public static class PuzzleEndpoints
         group.MapDelete("/{id}", DeletePuzzle.Handler)
             .AddEndpointFilter(adminFilter);
 
+        group.MapPut("/{id}", UpdatePuzzle.Handler)
+            .AddEndpointFilter(adminFilter);
+
         // ------------Player-----------------------------------------------------------
         group.MapGet("/daily", GetDailyPuzzle.Handler);
         group.MapPost("{id}/guess", Guess.Handler);
