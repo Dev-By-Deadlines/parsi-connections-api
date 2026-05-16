@@ -43,16 +43,23 @@ builder.Services.AddSwaggerGen(c =>
 
 // Admin API key
 var adminKey = builder.Configuration["ApiKeys:AdminKey"]
-    ?? Environment.GetEnvironmentVariable("AdminApiKey")  // fixed typo
+    ?? Environment.GetEnvironmentVariable("AdminApiKey")
     ?? throw new InvalidOperationException("Admin API key not configured.");
 
 // CORS
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
-        policy.WithOrigins("http://localhost:3000")
-              .AllowAnyMethod()
-              .AllowAnyHeader());
+        policy.WithOrigins(
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "http://trollguys.ir",
+            "https://trollguys.ir",
+            "http://5.57.35.83:5001",
+            "http://connections.trollguys.ir"
+        )
+        .AllowAnyMethod()
+        .AllowAnyHeader());
 });
 
 // Rate limiting
