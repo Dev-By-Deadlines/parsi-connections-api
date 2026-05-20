@@ -18,18 +18,44 @@ public static class PuzzleMapping
                 );
     }
 
-    public static PlayerPuzzleDto ToPlayerPuzzleDto(this Puzzle puzzle)
+    public static List<Word> GetShuffledWords(this Puzzle puzzle)
     {
-        var wordStrings = new List<string>();
-
-        puzzle.Categories
-            .Shuffle()
+        return puzzle.Categories
             .SelectMany(c => c.Words)
-            .Shuffle()
-            .ToList()
-            .ForEach(w => wordStrings.Add(w.Text));
+            .Select(w => new Word { Text = w.Text })
+            .OrderBy(_ => Guid.NewGuid())
+            .ToList();
+    }
 
-        return new PlayerPuzzleDto(puzzle.Id, wordStrings);
+    public static GameStateDto ToDto(this GameState state, Puzzle puzzle)
+    {
+        var solvedIds = state.SolvedCategoryIds
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(int.Parse)
+            .ToHashSet();
+
+        var solvedCategories = puzzle.Categories
+            .Where(c => solvedIds.Contains(c.Id))
+            .Select(c => new SolvedCategoryDto(
+                c.Name,
+                c.Words.Select(w => new WordDto(w.Text)).ToList()
+            ))
+            .ToList();
+
+        var unsolvedWords = puzzle.Categories
+            .Where(c => !solvedIds.Contains(c.Id))
+            .SelectMany(c => c.Words)
+            .OrderBy(_ => Guid.NewGuid())    // re‑shuffle on every request
+            .Select(w => w.Text)
+            .ToList();
+
+        return new GameStateDto
+        {
+            PuzzleId = state.PuzzleId,
+            Outcome = state.Outcome,
+            RemainingHealth = state.RemainingHealth,
+            SolvedCategoryDtos = solvedCategories,
+            UnSolvedWords = unsolvedWords
+        };
     }
 }
-

@@ -1,5 +1,6 @@
 using Connecions.Api.Data;
 using Connecions.Api.Dtos;
+using Connecions.Api.Mapping;
 using Connecions.Api.Models;
 using Connecions.Api.Utils;
 using FluentValidation;
@@ -24,17 +25,8 @@ public static class Guess
         if (state is null || state.PuzzleId != id)
             return Results.BadRequest("Invalid session.");
 
-        // Already over?
-        if (state.RemainingHealth <= 0)
-            return Results.BadRequest("Game already lost. Start a new day.");
-
-        var solvedIds = state.SolvedCategoryIds
-            .Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .Select(int.Parse)
-            .ToHashSet();
-
-        if (solvedIds.Count == 4)
-            return Results.BadRequest("Game already won. Come back tomorrow.");
+        if (state.Outcome != Outcomes.Playing)
+            return Results.BadRequest("Game is already over.");
 
         var validationResult = await validator.ValidateAsync(guess);
         if (!validationResult.IsValid)
@@ -47,7 +39,7 @@ public static class Guess
 
         var puzzle = await dbContext.Puzzles
             .Include(p => p.Categories)
-                .ThenInclude(c => c.Words)
+            .ThenInclude(c => c.Words)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (puzzle is null)
@@ -58,9 +50,6 @@ public static class Guess
 
         foreach (var category in puzzle.Categories)
         {
-            if (solvedIds.Contains(category.Id))
-                continue;
-
             var categoryWordSet = new HashSet<string>(category.Words.Select(w => w.Text));
             int commonCount = guess.Words.Count(w => categoryWordSet.Contains(w));
 
@@ -77,68 +66,40 @@ public static class Guess
 
         if (correctCategory is not null)
         {
+            // Add the solved category ID
+            var solvedIds = state.SolvedCategoryIds
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(int.Parse)
+                .ToHashSet();
             solvedIds.Add(correctCategory.Id);
             state.SolvedCategoryIds = string.Join(',', solvedIds);
-            bool gameWon = solvedIds.Count == 4;
 
-            if (gameWon)
-            {
-                await dbContext.SaveChangesAsync();
-                return Results.Ok(new GuessResponseDto(
-                    Correct: true,
-                    CategoryName: correctCategory.Name,
-                    OneAway: false,
-                    SolvedWords: correctCategory.Words.Select(w => w.Text).ToList(),
-                    RemainingHealth: state.RemainingHealth,
-                    Outcome: "win"));
-            }
+            bool gameWon = solvedIds.Count == 4;
+            state.Outcome = gameWon ? Outcomes.Won : Outcomes.Playing;
 
             await dbContext.SaveChangesAsync();
+
+            var dto = state.ToDto(puzzle);
             return Results.Ok(new GuessResponseDto(
                 Correct: true,
-                CategoryName: correctCategory.Name,
                 OneAway: false,
-                SolvedWords: correctCategory.Words.Select(w => w.Text).ToList(),
-                RemainingHealth: state.RemainingHealth));
+                GameStateDto: dto));
         }
 
         // Wrong guess
         state.RemainingHealth--;
+
+        if (state.RemainingHealth == 0)
+        {
+            state.Outcome = Outcomes.Lost;
+        }
+
         await dbContext.SaveChangesAsync();
 
-        if (state.RemainingHealth <= 0)
-        {
-            var allCategories = puzzle.Categories.Select(c => new
-            {
-                c.Name,
-                Words = c.Words.Select(w => w.Text).ToList()
-            }).ToList();
-
-            return Results.Ok(new GuessResponseDto(
-                Correct: false,
-                CategoryName: null,
-                OneAway: false,
-                SolvedWords: null,
-                RemainingHealth: 0,
-                Outcome: "loss",
-                AllCategories: allCategories));
-        }
-
-        if (oneAwayCategory is not null)
-        {
-            return Results.Ok(new GuessResponseDto(
-                Correct: false,
-                CategoryName: null,
-                SolvedWords: null,
-                OneAway: true,
-                RemainingHealth: state.RemainingHealth));
-        }
-
+        var resultDto = state.ToDto(puzzle);
         return Results.Ok(new GuessResponseDto(
             Correct: false,
-            CategoryName: null,
-            OneAway: false,
-            SolvedWords: null,
-            RemainingHealth: state.RemainingHealth));
+            OneAway: oneAwayCategory is not null,
+            GameStateDto: resultDto));
     }
 }

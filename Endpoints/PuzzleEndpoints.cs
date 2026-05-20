@@ -12,6 +12,10 @@ public static class PuzzleEndpoints
         var group = app.MapGroup("/puzzles");
         var adminFilter = new ApiKeyAuthFilter(amdinKey);
 
+        // ------------Player----------------------------------------------------------
+        group.MapGet("/daily", GetDailyPuzzle.Handler);
+        group.MapPost("{id}/guess", Guess.Handler);
+
         // ------------Admin-----------------------------------------------------------
         group.MapGet("/", GetPuzzles.Handler)
             .AddEndpointFilter(adminFilter);
@@ -27,9 +31,5 @@ public static class PuzzleEndpoints
 
         group.MapPut("/{id}", UpdatePuzzle.Handler)
             .AddEndpointFilter(adminFilter);
-
-        // ------------Player-----------------------------------------------------------
-        group.MapGet("/daily", GetDailyPuzzle.Handler);
-        group.MapPost("{id}/guess", Guess.Handler);
     }
 }

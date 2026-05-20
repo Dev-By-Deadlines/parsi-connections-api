@@ -4,6 +4,7 @@ using Connecions.Api.Validators;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
+using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,10 @@ builder.Services.AddDbContext<ConnectionsContext>(options =>
 
 // Validation
 builder.Services.AddValidatorsFromAssemblyContaining<CreatePuzzleDtoValidator>();
+
+// String Enums instead of int
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();

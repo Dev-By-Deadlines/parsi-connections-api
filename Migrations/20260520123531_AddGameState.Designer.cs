@@ -3,6 +3,7 @@ using System;
 using Connecions.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Connections.Api.Migrations
 {
     [DbContext(typeof(ConnectionsContext))]
-    partial class ConnectionsContextModelSnapshot : ModelSnapshot
+    [Migration("20260520123531_AddGameState")]
+    partial class AddGameState
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.7");
@@ -23,6 +26,9 @@ namespace Connections.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("GameStateId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -31,6 +37,8 @@ namespace Connections.Api.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GameStateId");
 
                     b.HasIndex("PuzzleId");
 
@@ -65,9 +73,6 @@ namespace Connections.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Outcome")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("PuzzleId")
                         .HasColumnType("INTEGER");
 
@@ -75,10 +80,6 @@ namespace Connections.Api.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("SessionId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("SolvedCategoryIds")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -110,6 +111,9 @@ namespace Connections.Api.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("GameStateId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -118,11 +122,17 @@ namespace Connections.Api.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("GameStateId");
+
                     b.ToTable("Words");
                 });
 
             modelBuilder.Entity("Connecions.Api.Models.Category", b =>
                 {
+                    b.HasOne("Connecions.Api.Models.GameState", null)
+                        .WithMany("SolvedCategories")
+                        .HasForeignKey("GameStateId");
+
                     b.HasOne("Connecions.Api.Models.Puzzle", "Puzzle")
                         .WithMany("Categories")
                         .HasForeignKey("PuzzleId")
@@ -150,11 +160,22 @@ namespace Connections.Api.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Connecions.Api.Models.GameState", null)
+                        .WithMany("UnsolvedWords")
+                        .HasForeignKey("GameStateId");
                 });
 
             modelBuilder.Entity("Connecions.Api.Models.Category", b =>
                 {
                     b.Navigation("Words");
+                });
+
+            modelBuilder.Entity("Connecions.Api.Models.GameState", b =>
+                {
+                    b.Navigation("SolvedCategories");
+
+                    b.Navigation("UnsolvedWords");
                 });
 
             modelBuilder.Entity("Connecions.Api.Models.Puzzle", b =>
