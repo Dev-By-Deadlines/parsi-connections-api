@@ -15,10 +15,8 @@ builder.Services.AddDbContext<ConnectionsContext>(options =>
 // Validation
 builder.Services.AddValidatorsFromAssemblyContaining<CreatePuzzleDtoValidator>();
 
-// Swagger – add Endpoints API Explorer first
-builder.Services.AddEndpointsApiExplorer();
-
 // Swagger
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.OpenApiInfo
@@ -31,13 +29,9 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
     {
         Description = "Enter your admin API key",
-        Name = "X-Api-Key",          // The header name your filter expects
+        Name = "X-Api-Key",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
-    });
-    c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-    {
-        [new OpenApiSecuritySchemeReference("ApiKey", document)] = new List<string>()
     });
 });
 
