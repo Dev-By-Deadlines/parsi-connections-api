@@ -21,7 +21,7 @@ public static class Guess
         if (!httpContext.Request.Cookies.TryGetValue(cookieName, out var sessionId))
             return Results.BadRequest("No active game session.");
 
-        var state = await dbContext.GameState.FirstOrDefaultAsync(gs => gs.SessionId == sessionId);
+        var state = await dbContext.GameStates.FirstOrDefaultAsync(gs => gs.SessionId == sessionId);
         if (state is null || state.PuzzleId != id)
             return Results.BadRequest("Invalid session.");
 

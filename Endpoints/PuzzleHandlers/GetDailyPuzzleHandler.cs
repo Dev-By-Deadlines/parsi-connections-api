@@ -17,7 +17,7 @@ public static class GetDailyPuzzle
 
         GameState? state = null;
         if (httpContext.Request.Cookies.TryGetValue(cookieName, out var sessionId))
-            state = await dbContext.GameState.FirstOrDefaultAsync(gs => gs.SessionId == sessionId);
+            state = await dbContext.GameStates.FirstOrDefaultAsync(gs => gs.SessionId == sessionId);
 
         if (state is null)
         {
@@ -30,7 +30,7 @@ public static class GetDailyPuzzle
                 RemainingHealth = 4,
                 SolvedCategoryIds = ""
             };
-            dbContext.GameState.Add(state);
+            dbContext.GameStates.Add(state);
         }
         else if (state.PuzzleId != puzzle.Id)
         {
@@ -67,7 +67,7 @@ public static class GetDailyPuzzle
 
     async static Task<DailyPuzzle> GetDailyPuzzleObject(ConnectionsContext dbContext, DateOnly today)
     {
-        DailyPuzzle? dailyPuzzleEntity = await dbContext.DailyPuzzle
+        DailyPuzzle? dailyPuzzleEntity = await dbContext.DailyPuzzles
             .Include(dp => dp.Puzzle)
             .ThenInclude(p => p.Categories)
             .ThenInclude(c => c.Words)
@@ -89,7 +89,7 @@ public static class GetDailyPuzzle
                 PuzzleId = puzzle.Id,
                 Puzzle = puzzle
             };
-            dbContext.DailyPuzzle.Add(dailyPuzzleEntity);
+            dbContext.DailyPuzzles.Add(dailyPuzzleEntity);
         }
 
         return dailyPuzzleEntity;

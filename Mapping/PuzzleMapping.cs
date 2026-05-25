@@ -29,25 +29,43 @@ public static class PuzzleMapping
 
     public static GameStateDto ToDto(this GameState state, Puzzle puzzle)
     {
+        // Parse normally solved IDs
         var solvedIds = state.SolvedCategoryIds
             .Split(',', StringSplitOptions.RemoveEmptyEntries)
             .Select(int.Parse)
             .ToHashSet();
 
-        var solvedCategories = puzzle.Categories
-            .Where(c => solvedIds.Contains(c.Id))
-            .Select(c => new SolvedCategoryDto(
-                c.Name,
-                c.Words.Select(w => new WordDto(w.Text)).ToList()
-            ))
-            .ToList();
+        List<SolvedCategoryDto> solvedCategories;
+        List<string> unsolvedWords;
 
-        var unsolvedWords = puzzle.Categories
-            .Where(c => !solvedIds.Contains(c.Id))
-            .SelectMany(c => c.Words)
-            .OrderBy(_ => Guid.NewGuid())    // re‑shuffle on every request
-            .Select(w => w.Text)
-            .ToList();
+        if (state.Outcome == Outcomes.Lost || state.Outcome == Outcomes.Won)
+        {
+            // Game over – reveal everything
+            solvedCategories = puzzle.Categories
+                .Select(c => new SolvedCategoryDto(
+                    c.Name,
+                    c.Words.Select(w => new WordDto(w.Text)).ToList()
+                ))
+                .ToList();
+            unsolvedWords = new List<string>();   // nothing left to guess
+        }
+        else
+        {
+            // Normal play – only show solved categories and remaining words
+            solvedCategories = puzzle.Categories
+                .Where(c => solvedIds.Contains(c.Id))
+                .Select(c => new SolvedCategoryDto(
+                    c.Name,
+                    c.Words.Select(w => new WordDto(w.Text)).ToList()
+                ))
+                .ToList();
+            unsolvedWords = puzzle.Categories
+                .Where(c => !solvedIds.Contains(c.Id))
+                .SelectMany(c => c.Words)
+                .OrderBy(_ => Guid.NewGuid())
+                .Select(w => w.Text)
+                .ToList();
+        }
 
         return new GameStateDto
         {

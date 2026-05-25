@@ -8,8 +8,8 @@ public class ConnectionsContext(DbContextOptions<ConnectionsContext> options) : 
     public DbSet<Puzzle> Puzzles => Set<Puzzle>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Word> Words => Set<Word>();
-    public DbSet<DailyPuzzle> DailyPuzzle => Set<DailyPuzzle>();
-    public DbSet<GameState> GameState => Set<GameState>();
+    public DbSet<DailyPuzzle> DailyPuzzles => Set<DailyPuzzle>();
+    public DbSet<GameState> GameStates => Set<GameState>();
 
     protected override void OnModelCreating(ModelBuilder ModelBuilder)
     {
