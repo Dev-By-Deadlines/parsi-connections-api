@@ -1,3 +1,5 @@
+using Serilog;
+
 using Connecions.Api.Data;
 using Connecions.Api.Endpoints;
 using Connecions.Api.Validators;
@@ -6,12 +8,29 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Connecions.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+    .WriteTo.Console()
+    .WriteTo.File(
+            "/var/log/connections.log",
+            rollingInterval: RollingInterval.Day,
+            retainedFileCountLimit: 7)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
 // Database
 builder.Services.AddDbContext<ConnectionsContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("Connections")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("Connections"))
+    .ConfigureWarnings(warnings =>
+        warnings.Ignore(RelationalEventId.MultipleCollectionIncludeWarning)));
 
 // Validation
 builder.Services.AddValidatorsFromAssemblyContaining<CreatePuzzleDtoValidator>();
@@ -19,6 +38,11 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreatePuzzleDtoValidator>()
 // String Enums instead of int
 builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+// Custom Services
+builder.Services.AddScoped<PuzzleService>();
+builder.Services.AddScoped<GameStateService>();
+builder.Services.AddScoped<GuessService>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
