@@ -12,3 +12,5 @@ publish/
 Connections.db
 seedPuzzles.http
 admin.html
+design.txt
+deploy.sh
