@@ -19,21 +19,29 @@ public class GameStateService(ConnectionsContext dbContext)
                 PuzzleId = puzzle.Id,
                 Outcome = Outcomes.Playing,
                 RemainingHealth = 4,
-                SolvedCategoryIds = ""
+                SolvedCategoryIds = "",
+                WordOrder = GenerateWordOrder(puzzle)
             };
             dbContext.GameStates.Add(state);
         }
-        else if (state.PuzzleId != puzzle.Id) // new day
+        else if (state.PuzzleId != puzzle.Id)
         {
             state.PuzzleId = puzzle.Id;
             state.RemainingHealth = 4;
             state.Outcome = Outcomes.Playing;
             state.SolvedCategoryIds = "";
+            state.WordOrder = GenerateWordOrder(puzzle);
         }
 
         RecalculateOutcome(state);
         return state;
     }
+
+    private static string GenerateWordOrder(Puzzle puzzle) =>
+        string.Join(',', puzzle.Categories
+            .SelectMany(c => c.Words)
+            .OrderBy(_ => Guid.NewGuid())
+            .Select(w => w.Id));
 
     public void ApplyCorrectGuess(GameState state, Category correctCategory)
     {

@@ -8,6 +8,7 @@ public class GameState
     public Outcomes Outcome { get; set; } = Outcomes.Playing;
     public int RemainingHealth { get; set; } = 4;
     public string SolvedCategoryIds { get; set; } = "";
+    public string WordOrder { get; set; } = "";
 }
 
 public enum Outcomes

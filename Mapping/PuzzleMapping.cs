@@ -59,11 +59,15 @@ public static class PuzzleMapping
                     c.Words.Select(w => new WordDto(w.Text)).ToList()
                 ))
                 .ToList();
-            unsolvedWords = puzzle.Categories
-                .Where(c => !solvedIds.Contains(c.Id))
+            var wordById = puzzle.Categories
                 .SelectMany(c => c.Words)
-                .OrderBy(_ => Guid.NewGuid())
-                .Select(w => w.Text)
+                .ToDictionary(w => w.Id);
+
+            unsolvedWords = state.WordOrder
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(int.Parse)
+                .Where(id => !solvedIds.Contains(wordById[id].CategoryId))
+                .Select(id => wordById[id].Text)
                 .ToList();
         }
 

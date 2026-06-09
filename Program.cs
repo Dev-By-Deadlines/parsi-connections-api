@@ -83,10 +83,13 @@ builder.Services.AddCors(options =>
             "http://trollguys.ir",
             "https://trollguys.ir",
             "http://5.57.35.83:5001",
-            "http://connections.trollguys.ir"
+            "http://connections.trollguys.ir",
+            "null"
         )
         .AllowAnyMethod()
-        .AllowAnyHeader());
+        .AllowAnyHeader()
+        .AllowCredentials()
+        .WithExposedHeaders("*"));
 });
 
 // Rate limiting
@@ -96,7 +99,7 @@ builder.Services.AddRateLimiter(options =>
         RateLimitPartition.GetFixedWindowLimiter("GlobalPolicy", _ =>
             new FixedWindowRateLimiterOptions
             {
-                PermitLimit = 30,
+                PermitLimit = 60,
                 Window = TimeSpan.FromMinutes(1),
                 QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst,
                 QueueLimit = 0

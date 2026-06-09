@@ -36,7 +36,7 @@ public class GetDailyPuzzle
                 Expires = DateTimeOffset.UtcNow.AddDays(7)
             });
         }
-
-        return Results.Ok(state.ToDto(puzzle));
+        var dto = state.ToDto(puzzle);
+        return Results.Ok(dto);
     }
 }

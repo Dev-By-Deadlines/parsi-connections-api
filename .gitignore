@@ -11,3 +11,4 @@ secrets.json
 publish/
 Connections.db
 seedPuzzles.http
+admin.html
