@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Connecions.Api.Endpoints.PuzzleHandlers;
 
-public class GetStatsHandler
+public class GetStats
 {
     public static async Task<IResult> Handler(
         HttpContext httpContext,
