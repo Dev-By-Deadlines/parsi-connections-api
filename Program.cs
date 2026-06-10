@@ -84,7 +84,9 @@ builder.Services.AddCors(options =>
             "https://trollguys.ir",
             "http://5.57.35.83:5001",
             "http://connections.trollguys.ir",
-            "null"
+            "null",
+            "https://kalamboot.ir",
+            "http://kalamboot.ir"
         )
         .AllowAnyMethod()
         .AllowAnyHeader()
