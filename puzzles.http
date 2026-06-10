@@ -2,6 +2,8 @@
 
 @base = http://localhost:5001
 
+GET {{base}}/puzzles/archive HTTP/1.1
+
 
 ### Create a new puzzle
 

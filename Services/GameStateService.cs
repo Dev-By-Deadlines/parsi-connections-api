@@ -6,16 +6,17 @@ namespace Connecions.Api.Services;
 
 public class GameStateService(ConnectionsContext dbContext)
 {
-    public async Task<GameState> GetOrCreateAsync(string sessionId, Puzzle puzzle)
+    public async Task<GameState> GetOrCreateForPuzzleAsync(List<string> sessionIds, Puzzle puzzle)
     {
+        // Find existing state for this puzzle among all the player's sessions
         var state = await dbContext.GameStates
-            .FirstOrDefaultAsync(gs => gs.SessionId == sessionId);
+            .FirstOrDefaultAsync(gs => sessionIds.Contains(gs.SessionId) && gs.PuzzleId == puzzle.Id);
 
         if (state is null)
         {
             state = new GameState
             {
-                SessionId = sessionId,
+                SessionId = GenerateSessionId(),
                 PuzzleId = puzzle.Id,
                 Outcome = Outcomes.Playing,
                 RemainingHealth = 4,
@@ -24,17 +25,24 @@ public class GameStateService(ConnectionsContext dbContext)
             };
             dbContext.GameStates.Add(state);
         }
-        else if (state.PuzzleId != puzzle.Id)
-        {
-            state.PuzzleId = puzzle.Id;
-            state.RemainingHealth = 4;
-            state.Outcome = Outcomes.Playing;
-            state.SolvedCategoryIds = "";
-            state.WordOrder = GenerateWordOrder(puzzle);
-        }
 
         RecalculateOutcome(state);
         return state;
+    }
+
+    public async Task<List<GameState>> GetAllPlayerGameStatesAsync(List<string> sessionIds)
+    {
+        return await dbContext.GameStates
+            .Where(gs => sessionIds.Contains(gs.SessionId))
+            .ToListAsync();
+    }
+
+    private static readonly char[] Chars = "abcdefghijklmnopqrstuvwxyz0123456789".ToCharArray();
+    public static string GenerateSessionId()
+    {
+        return new string(Enumerable.Range(0, 8)
+            .Select(_ => Chars[Random.Shared.Next(Chars.Length)])
+            .ToArray());
     }
 
     private static string GenerateWordOrder(Puzzle puzzle) =>

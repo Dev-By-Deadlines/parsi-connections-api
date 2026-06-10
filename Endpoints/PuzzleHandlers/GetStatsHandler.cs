@@ -9,25 +9,26 @@ namespace Connecions.Api.Endpoints.PuzzleHandlers;
 public class GetStats
 {
     public static async Task<IResult> Handler(
+        int id,
         HttpContext httpContext,
         ConnectionsContext dbContext)
     {
-        var cookieName = GameConstants.SessionCookieName;
-
-        if (!httpContext.Request.Cookies.TryGetValue(cookieName, out var sessionId))
-            return Results.BadRequest("No active session.");
+        httpContext.Request.Cookies.TryGetValue(GameConstants.SessionCookieName, out var cookieValue);
+        var sessionIds = cookieValue?
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .ToList() ?? new();
 
         var state = await dbContext.GameStates
-            .FirstOrDefaultAsync(gs => gs.SessionId == sessionId);
+            .FirstOrDefaultAsync(gs => sessionIds.Contains(gs.SessionId) && gs.PuzzleId == id);
 
         if (state is null)
-            return Results.NotFound("Session not found.");
+            return Results.NotFound("No session found for this puzzle.");
 
         if (state.Outcome == Outcomes.Playing)
             return Results.BadRequest("Game is not finished yet.");
 
         var allFinished = await dbContext.GameStates
-            .Where(gs => gs.PuzzleId == state.PuzzleId && gs.Outcome != Outcomes.Playing)
+            .Where(gs => gs.PuzzleId == id && gs.Outcome != Outcomes.Playing)
             .ToListAsync();
 
         var totalPlayers = allFinished.Count;

@@ -1,5 +1,4 @@
 using Connecions.Api.Mapping;
-using Connecions.Api.Models;
 using Connecions.Api.Services;
 using Connecions.Api.Utils;
 
@@ -15,27 +14,29 @@ public class GetDailyPuzzle
     {
         var cookieName = GameConstants.SessionCookieName;
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
-
         var dailyPuzzle = await puzzleService.GetOrCreateDailyPuzzleAsync(today);
         var puzzle = dailyPuzzle.Puzzle;
 
-        httpContext.Request.Cookies.TryGetValue(cookieName, out var sessionId);
-        sessionId ??= Guid.NewGuid().ToString();
+        httpContext.Request.Cookies.TryGetValue(cookieName, out var cookieValue);
+        var sessionIds = cookieValue?
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .ToList() ?? new List<string>();
 
-        logger.LogInformation("Daily puzzle requested for session {SessionId}", sessionId);
+        var state = await gameStateService.GetOrCreateForPuzzleAsync(sessionIds, puzzle);
 
-        var state = await gameStateService.GetOrCreateAsync(sessionId, puzzle);
+        // If this is a new session, add it to the list
+        if (!sessionIds.Contains(state.SessionId))
+            sessionIds.Add(state.SessionId);
+
         await gameStateService.SaveAsync();
 
-        if (state.Outcome == Outcomes.Playing)
+        httpContext.Response.Cookies.Append(cookieName, string.Join(',', sessionIds), new CookieOptions
         {
-            httpContext.Response.Cookies.Append(cookieName, state.SessionId, new CookieOptions
-            {
-                HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddDays(7)
-            });
-        }
+            HttpOnly = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTimeOffset.UtcNow.AddDays(400)
+        });
+
         var dto = state.ToDto(puzzle);
         return Results.Ok(dto);
     }

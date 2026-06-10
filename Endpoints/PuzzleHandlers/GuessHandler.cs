@@ -23,12 +23,18 @@ public class Guess
         ILogger<Guess> logger)
     {
         var cookieName = GameConstants.SessionCookieName;
-        if (!httpContext.Request.Cookies.TryGetValue(cookieName, out var sessionId))
-            return Results.BadRequest("No active game session.");
+        if (!httpContext.Request.Cookies.TryGetValue(cookieName, out var cookieValue))
+            return Results.BadRequest("No active game sessions.");
 
-        var state = await dbContext.GameStates.FirstOrDefaultAsync(gs => gs.SessionId == sessionId);
-        if (state is null || state.PuzzleId != id)
-            return Results.BadRequest("Invalid session.");
+        var sessionIds = cookieValue
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .ToList();
+
+        var state = await dbContext.GameStates
+            .FirstOrDefaultAsync(gs => sessionIds.Contains(gs.SessionId) && gs.PuzzleId == id);
+
+        if (state is null)
+            return Results.BadRequest("No session found for this puzzle.");
 
         if (state.Outcome != Outcomes.Playing)
             return Results.BadRequest("Game is already over.");

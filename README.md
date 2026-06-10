@@ -164,7 +164,7 @@ Response:
   "playerOutcome": "Won"
 }
 ```
-d/details>
+</details>
 
 ### Outcome values
 
