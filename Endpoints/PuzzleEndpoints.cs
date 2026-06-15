@@ -7,16 +7,16 @@ public static class PuzzleEndpoints
 {
     public const string GetPuzzleEndpointName = "GetPuzzle";
 
-    public static void MapPuzzleEndpoints(this WebApplication app, string amdinKey)
+    public static void MapPuzzleEndpoints(this WebApplication app, string adminKey)
     {
         var group = app.MapGroup("/puzzles");
-        var adminFilter = new ApiKeyAuthFilter(amdinKey);
+        var adminFilter = new ApiKeyAuthFilter(adminKey);
 
         // ------------Player----------------------------------------------------------
         group.MapGet("/daily", GetDailyPuzzle.Handler);
         group.MapPost("/{id}/guess", Guess.Handler);
         group.MapGet("/{id}/stats", GetStats.Handler);
-        group.MapGet("archive", GetArchiveHandler.Handler);
+        group.MapGet("/archive", GetArchiveHandler.Handler);
 
         // ------------Admin-----------------------------------------------------------
         group.MapGet("/", GetPuzzles.Handler)
