@@ -36,6 +36,13 @@ public class PuzzleService(ConnectionsContext dbContext)
             .ThenInclude(c => c.Words)
             .FirstOrDefaultAsync(p => p.Id == puzzleId);
 
+    public async Task<Puzzle?> GetArchivedPuzzleWithCategoriesAsync(int puzzleId) =>
+        await dbContext.Puzzles
+            .Where(p => p.LastUsed != null)
+            .Include(p => p.Categories)
+            .ThenInclude(c => c.Words)
+            .FirstOrDefaultAsync(p => p.Id == puzzleId);
+
     public async Task<List<Puzzle>> GetPlayedPuzzles()
     {
         return await dbContext.Puzzles

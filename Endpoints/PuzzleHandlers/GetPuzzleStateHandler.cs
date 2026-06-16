@@ -4,24 +4,23 @@ using Connecions.Api.Utils;
 
 namespace Connecions.Api.Endpoints.PuzzleHandlers;
 
-public class GetDailyPuzzle
+public class GetPuzzleStateHandler
 {
     public static async Task<IResult> Handler(
+        int id,
         HttpContext httpContext,
         PuzzleService puzzleService,
-        GameStateService gameStateService,
-        ILogger<GetDailyPuzzle> logger)
+        GameStateService gameStateService)
     {
-        var cookieName = GameConstants.SessionCookieName;
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
-        var dailyPuzzle = await puzzleService.GetOrCreateDailyPuzzleAsync(today);
-        var puzzle = dailyPuzzle.Puzzle;
+        var puzzle = await puzzleService.GetArchivedPuzzleWithCategoriesAsync(id);
+
+        if (puzzle is null)
+            return Results.NotFound("Puzzle not found.");
 
         var sessionIds = httpContext.GetGameSessionIds();
 
         var state = await gameStateService.GetOrCreateForPuzzleAsync(sessionIds, puzzle);
 
-        // If this is a new session, add it to the list
         if (!sessionIds.Contains(state.SessionId))
             sessionIds.Add(state.SessionId);
 
