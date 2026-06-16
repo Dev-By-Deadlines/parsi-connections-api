@@ -50,14 +50,18 @@ public class Guess
         {
             gameStateService.ApplyCorrectGuess(state, result.CorrectCategory);
             await gameStateService.SaveAsync();
-            logger.LogInformation("Correct guess for puzzle {PuzzleId} -- Category: {CategoryName}", puzzle.Id, result.CorrectCategory.Name);
+            logger.LogInformation("Correct guess for puzzle {PuzzleId}.", puzzle.Id);
+
+            if (state.Outcome == Outcomes.Won)
+                logger.LogInformation("Player won puzzle {PuzzleId}, with {hp} remaining health.", puzzle.Id, state.RemainingHealth);
         }
         else
         {
             gameStateService.ApplyWrongGuess(state);
+            logger.LogInformation("Wrong guess for puzzle {PuzzleId}.", puzzle.Id);
             await gameStateService.SaveAsync();
             if (state.Outcome == Outcomes.Lost)
-                logger.LogInformation("Player lost puzzle {PuzzleId}", puzzle.Id);
+                logger.LogInformation("Player lost puzzle {PuzzleId}.", puzzle.Id);
         }
 
         return Results.Ok(new GuessResponseDto(

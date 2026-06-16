@@ -9,10 +9,8 @@ public class GetDailyPuzzle
     public static async Task<IResult> Handler(
         HttpContext httpContext,
         PuzzleService puzzleService,
-        GameStateService gameStateService,
-        ILogger<GetDailyPuzzle> logger)
+        GameStateService gameStateService)
     {
-        var cookieName = GameConstants.SessionCookieName;
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var dailyPuzzle = await puzzleService.GetOrCreateDailyPuzzleAsync(today);
         var puzzle = dailyPuzzle.Puzzle;

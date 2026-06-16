@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Connecions.Api.Services;
 
-public class PuzzleService(ConnectionsContext dbContext)
+public class PuzzleService(ConnectionsContext dbContext, ILogger<PuzzleService> logger)
 {
     public async Task<DailyPuzzle> GetOrCreateDailyPuzzleAsync(DateOnly date)
     {
@@ -26,6 +26,7 @@ public class PuzzleService(ConnectionsContext dbContext)
         puzzle.LastUsed = date;
         dailyPuzzle = new DailyPuzzle { Date = date, PuzzleId = puzzle.Id, Puzzle = puzzle };
         dbContext.DailyPuzzles.Add(dailyPuzzle);
+        logger.LogInformation("A new daily puzzle with id {id} has been selected", dailyPuzzle.PuzzleId);
 
         return dailyPuzzle;
     }
