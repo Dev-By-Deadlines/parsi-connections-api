@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Connecions.Api.Endpoints.PuzzleHandlers;
 
-public class GetArchiveHandler
+public class GetArchive
 {
     public static async Task<IResult> Handler(
         HttpContext httpContext,

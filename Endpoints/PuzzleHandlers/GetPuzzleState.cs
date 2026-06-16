@@ -4,7 +4,7 @@ using Connecions.Api.Utils;
 
 namespace Connecions.Api.Endpoints.PuzzleHandlers;
 
-public class GetPuzzleStateHandler
+public class GetPuzzleState
 {
     public static async Task<IResult> Handler(
         int id,
