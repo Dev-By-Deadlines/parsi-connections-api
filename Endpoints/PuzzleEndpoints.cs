@@ -17,6 +17,7 @@ public static class PuzzleEndpoints
         group.MapPost("/{id}/guess", Guess.Handler);
         group.MapGet("/{id}/stats", GetStats.Handler);
         group.MapGet("/archive", GetArchiveHandler.Handler);
+        //group.MapGet("{id}/play", GetPuzzleStateHandler.Handler);
 
         // ------------Admin-----------------------------------------------------------
         group.MapGet("/", GetPuzzles.Handler)

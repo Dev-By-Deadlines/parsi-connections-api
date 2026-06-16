@@ -22,13 +22,7 @@ public class Guess
         GameStateService gameStateService,
         ILogger<Guess> logger)
     {
-        var cookieName = GameConstants.SessionCookieName;
-        if (!httpContext.Request.Cookies.TryGetValue(cookieName, out var cookieValue))
-            return Results.BadRequest("No active game sessions.");
-
-        var sessionIds = cookieValue
-            .Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .ToList();
+        var sessionIds = httpContext.GetGameSessionIds();
 
         var state = await dbContext.GameStates
             .FirstOrDefaultAsync(gs => sessionIds.Contains(gs.SessionId) && gs.PuzzleId == id);

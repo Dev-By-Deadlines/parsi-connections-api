@@ -13,10 +13,7 @@ public class GetStats
         HttpContext httpContext,
         ConnectionsContext dbContext)
     {
-        httpContext.Request.Cookies.TryGetValue(GameConstants.SessionCookieName, out var cookieValue);
-        var sessionIds = cookieValue?
-            .Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .ToList() ?? new();
+        var sessionIds = httpContext.GetGameSessionIds();
 
         var state = await dbContext.GameStates
             .FirstOrDefaultAsync(gs => sessionIds.Contains(gs.SessionId) && gs.PuzzleId == id);

@@ -17,10 +17,7 @@ public class GetDailyPuzzle
         var dailyPuzzle = await puzzleService.GetOrCreateDailyPuzzleAsync(today);
         var puzzle = dailyPuzzle.Puzzle;
 
-        httpContext.Request.Cookies.TryGetValue(cookieName, out var cookieValue);
-        var sessionIds = cookieValue?
-            .Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .ToList() ?? new List<string>();
+        var sessionIds = httpContext.GetGameSessionIds();
 
         var state = await gameStateService.GetOrCreateForPuzzleAsync(sessionIds, puzzle);
 

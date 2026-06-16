@@ -17,7 +17,7 @@ public class GetArchiveHandler
         if (page < 1) page = 1;
         if (limit < 1 || limit > 100) limit = 10;
 
-        var sessionIds = GetSessionIds(httpContext);
+        var sessionIds = httpContext.GetGameSessionIds();
         var playedPuzzles = await puzzleService.GetPlayedPuzzles();
 
         if (!playedPuzzles.Any())
@@ -47,13 +47,5 @@ public class GetArchiveHandler
         .ToList();
 
         return Results.Ok(new PaginatedResponse<ArchiveItemDto>(dtos, page, limit, total, totalPages));
-    }
-
-    private static List<string> GetSessionIds(HttpContext httpContext)
-    {
-        httpContext.Request.Cookies.TryGetValue(GameConstants.SessionCookieName, out var cookieValue);
-        return cookieValue?
-            .Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .ToList() ?? new();
     }
 }
