@@ -140,6 +140,7 @@ Response:
     "solvedCategoryDtos": [
       {
         "name": "حالت های موبایل",
+        "categoryIndex": 1,
         "words": [
           { "text": "لرزش" },
           { "text": "بی صدا" },
@@ -163,7 +164,16 @@ Response:
   "averageRemainingHealth": 2.3,
   "playerPercentile": 85.0,
   "playerHealth": 3,
-  "playerOutcome": "Won"
+  "playerOutcome": "Won",
+  "guessGrid": [
+    "🟪🟩🟪🟩",
+    "🟧🟩🟦🟪",
+    "🟦🟦🟦🟦",
+    "🟪🟩🟧🟪",
+    "🟧🟧🟧🟧",
+    "🟩🟩🟩🟩",
+    "🟪🟪🟪🟪"
+  ]
 }
 ```
 </details>
@@ -212,6 +222,19 @@ Response:
 | `Won` | All 4 categories solved |
 | `Lost` | Health reached 0 — all categories revealed |
 | `null` | Player hasn't played this puzzle yet (archive only) |
+
+### Category index → color mapping
+
+Each solved category includes a `categoryIndex` (0–3) so the frontend can assign consistent colors:
+
+| Index | Color |
+|-------|-------|
+| `0` | 🟦 Blue |
+| `1` | 🟪 Purple |
+| `2` | 🟨 Yellow |
+| `3` | 🟧 Orange |
+
+The same indices are used in the `guessGrid` emoji rows returned by `/{id}/stats`.
 
 ## Game Rules
 
