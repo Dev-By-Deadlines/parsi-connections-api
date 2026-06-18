@@ -229,9 +229,9 @@ Each solved category includes a `categoryIndex` (0–3) so the frontend can assi
 
 | Index | Color |
 |-------|-------|
-| `0` | 🟦 Blue |
-| `1` | 🟪 Purple |
-| `2` | 🟨 Yellow |
+| `0` | 🟩 Green |
+| `1` | 🟦 Blue |
+| `2` | 🟪 Purple |
 | `3` | 🟧 Orange |
 
 The same indices are used in the `guessGrid` emoji rows returned by `/{id}/stats`.
