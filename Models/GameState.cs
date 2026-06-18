@@ -9,6 +9,7 @@ public class GameState
     public int RemainingHealth { get; set; } = 4;
     public string SolvedCategoryIds { get; set; } = "";
     public string WordOrder { get; set; } = "";
+    public List<string> GuessGrid { get; set; } = new();
 }
 
 public enum Outcomes

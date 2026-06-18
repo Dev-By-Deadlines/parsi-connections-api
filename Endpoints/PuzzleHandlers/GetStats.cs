@@ -36,13 +36,22 @@ public class GetStats
             ? Math.Round((double)allFinished.Count(s => s.RemainingHealth < state.RemainingHealth) / (totalPlayers - 1) * 100, 1)
             : 100;
 
+        var allEmojis = state.GuessGrid;
+        var grid = new List<string>();
+
+        for (int i = 0; i < allEmojis.Count; i += 4)
+        {
+            grid.Add(string.Join("", allEmojis.Skip(i).Take(4)));
+        }
+
         return Results.Ok(new StatsDto(
             TotalPlayers: totalPlayers,
             WinRate: winRate,
             AverageRemainingHealth: averageHealth,
             PlayerPercentile: percentile,
             PlayerHealth: state.RemainingHealth,
-            PlayerOutcome: state.Outcome
+            PlayerOutcome: state.Outcome,
+            GuessGrid: grid
         ));
     }
 }

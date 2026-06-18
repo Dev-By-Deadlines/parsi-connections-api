@@ -45,6 +45,8 @@ public class Guess
             return Results.NotFound("Puzzle not found.");
 
         var result = guessService.EvaluateGuess(puzzle, guess.Words);
+        var guessRow = guessService.GetGuessEmojiRow(puzzle, guess.Words);
+        state.GuessGrid.AddRange(guessRow);
 
         if (result.CorrectCategory is not null)
         {

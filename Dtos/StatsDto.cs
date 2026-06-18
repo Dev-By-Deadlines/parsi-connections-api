@@ -8,5 +8,6 @@ public record StatsDto(
     double AverageRemainingHealth,
     double PlayerPercentile,
     int PlayerHealth,
-    Outcomes PlayerOutcome
+    Outcomes PlayerOutcome,
+    List<string> GuessGrid
 );

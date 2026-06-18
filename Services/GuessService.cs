@@ -1,4 +1,5 @@
 using Connecions.Api.Models;
+using Connecions.Api.Utils;
 
 namespace Connecions.Api.Services;
 
@@ -28,5 +29,24 @@ public class GuessService
         }
 
         return new GuessResult(correctCategory, isOneAway);
+    }
+
+    public string[] GetGuessEmojiRow(Puzzle puzzle, List<string> words)
+    {
+        var row = new string[words.Count];
+
+        for (int i = 0; i < words.Count; i++)
+        {
+            var matchingCategory = puzzle.Categories
+                .FirstOrDefault(c => c.Words.Any(w => w.Text == words[i]));
+
+            var emoji = matchingCategory is not null
+                ? GameConstants.CategoryIndexToEmojiMap[puzzle.Categories.IndexOf(matchingCategory)]
+                : "?";
+
+            row[i] = emoji;
+        }
+
+        return row;
     }
 }

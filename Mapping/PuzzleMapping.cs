@@ -44,6 +44,7 @@ public static class PuzzleMapping
             solvedCategories = puzzle.Categories
                 .Select(c => new SolvedCategoryDto(
                     c.Name,
+puzzle.Categories.IndexOf(c),
                     c.Words.Select(w => new WordDto(w.Text)).ToList()
                 ))
                 .ToList();
@@ -56,6 +57,7 @@ public static class PuzzleMapping
                 .Where(c => solvedIds.Contains(c.Id))
                 .Select(c => new SolvedCategoryDto(
                     c.Name,
+puzzle.Categories.IndexOf(c),
                     c.Words.Select(w => new WordDto(w.Text)).ToList()
                 ))
                 .ToList();
