@@ -84,6 +84,12 @@ Require `X-Api-Key` header.
 | `PUT` | `/puzzles/{id}` | Update a puzzle |
 | `DELETE` | `/puzzles/{id}` | Delete a puzzle |
 
+### Other Endpoints
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| `GET` | `/health` | Check API and database health |
+
 ### Sample Responses
 
 <details>
