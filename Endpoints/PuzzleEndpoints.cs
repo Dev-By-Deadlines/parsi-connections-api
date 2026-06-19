@@ -1,4 +1,5 @@
 using Connecions.Api.Endpoints.PuzzleHandlers;
+using Connecions.Api.Endpoints.HealthCheck;
 using Connecions.Api.Filters;
 
 namespace Connecions.Api.Endpoints;
@@ -18,6 +19,7 @@ public static class PuzzleEndpoints
         group.MapGet("/{id}/stats", GetStats.Handler);
         group.MapGet("/archive", GetArchive.Handler);
         group.MapGet("/{id}/play", GetPuzzleState.Handler);
+        group.MapGet("/health", HealthCheckHandler.Handler);
 
         // ------------Admin-----------------------------------------------------------
         group.MapGet("/", GetPuzzles.Handler)
