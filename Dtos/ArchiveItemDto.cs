@@ -7,6 +7,6 @@ public record ArchiveItemDto(
         int RemainingHealth,
         int SolvedCategories,
         Outcomes? Outcome,
-        DateOnly LastUsedInDaily
+        string LastUsedInDaily
         )
 { }

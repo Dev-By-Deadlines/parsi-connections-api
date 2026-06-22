@@ -1,3 +1,4 @@
+using System.Globalization;
 using Connecions.Api.Dtos;
 using Connecions.Api.Services;
 using Connecions.Api.Utils;
@@ -34,7 +35,9 @@ public class GetArchive
                 SolvedCategories: state?.SolvedCategoryIds
                     .Split(',', StringSplitOptions.RemoveEmptyEntries).Length ?? 0,
                 Outcome: state?.Outcome,
-                LastUsedInDaily: puzzle.LastUsed!.Value);
+                LastUsedInDaily: puzzle.LastUsed.HasValue
+                    ? ToPersianDateString(puzzle.LastUsed.Value)
+                    : "-");
         })
         .ToList();
 
@@ -47,5 +50,15 @@ public class GetArchive
         .ToList();
 
         return Results.Ok(new PaginatedResponse<ArchiveItemDto>(dtos, page, limit, total, totalPages));
+    }
+
+    private static string ToPersianDateString(DateOnly date)
+    {
+        DateTime dateTime = date.ToDateTime(TimeOnly.MinValue);
+        PersianCalendar pc = new PersianCalendar();
+        int year = pc.GetYear(dateTime);
+        int month = pc.GetMonth(dateTime);
+        int day = pc.GetDayOfMonth(dateTime);
+        return $"{year}/{month:D2}/{day:D2}";
     }
 }
