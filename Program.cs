@@ -18,19 +18,28 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
     .WriteTo.Console()
-    .WriteTo.File(
-            "/var/log/connections.log",
-            rollingInterval: RollingInterval.Day,
-            retainedFileCountLimit: 7)
     .CreateLogger();
 
 builder.Host.UseSerilog();
 
 // Database
+var tursoUrl = builder.Configuration["TURSO_URL"];
+var tursoToken = builder.Configuration["TURSO_TOKEN"];
+
+if (string.IsNullOrWhiteSpace(tursoUrl) ||
+    string.IsNullOrWhiteSpace(tursoToken))
+{
+    throw new InvalidOperationException(
+        "TURSO_URL and TURSO_TOKEN must be configured.");
+}
+
+var connectionString =
+    $"{tursoUrl.TrimEnd('/')}/v2/pipeline;{tursoToken}";
+
 builder.Services.AddDbContext<ConnectionsContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("Connections"))
-    .ConfigureWarnings(warnings =>
-        warnings.Ignore(RelationalEventId.MultipleCollectionIncludeWarning)));
+    options.UseLibSql(connectionString)
+        .ConfigureWarnings(warnings =>
+            warnings.Ignore(RelationalEventId.MultipleCollectionIncludeWarning)));
 
 // Validation
 builder.Services.AddValidatorsFromAssemblyContaining<CreatePuzzleDtoValidator>();
@@ -78,12 +87,6 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
         policy.WithOrigins(
-            "http://localhost:3000",
-            "http://localhost:3001",
-            "http://trollguys.ir",
-            "https://trollguys.ir",
-            "http://5.57.35.83:5001",
-            "http://connections.trollguys.ir",
             "null",
             "https://kalamboot.ir",
             "http://kalamboot.ir"
@@ -124,10 +127,10 @@ app.UseSwaggerUI(c =>
 app.MapPuzzleEndpoints(adminKey);
 
 // Auto-migrate database
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<ConnectionsContext>();
-    db.Database.Migrate();
-}
+// using (var scope = app.Services.CreateScope())
+// {
+//     var db = scope.ServiceProvider.GetRequiredService<ConnectionsContext>();
+//     db.Database.Migrate();
+// }
 
 app.Run();
