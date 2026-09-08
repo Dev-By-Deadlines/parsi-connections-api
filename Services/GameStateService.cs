@@ -8,9 +8,18 @@ public class GameStateService(ConnectionsContext dbContext)
 {
     public async Task<GameState> GetOrCreateForPuzzleAsync(List<string> sessionIds, Puzzle puzzle)
     {
-        // Find existing state for this puzzle among all the player's sessions
-        var state = await dbContext.GameStates
-            .FirstOrDefaultAsync(gs => sessionIds.Contains(gs.SessionId) && gs.PuzzleId == puzzle.Id);
+        GameState? state = null;
+
+        foreach (var sessionId in sessionIds)
+        {
+            state = await dbContext.GameStates
+                .FirstOrDefaultAsync(gs =>
+                    gs.SessionId == sessionId &&
+                    gs.PuzzleId == puzzle.Id);
+
+            if (state is not null)
+                break;
+        }
 
         if (state is null)
         {
@@ -23,6 +32,7 @@ public class GameStateService(ConnectionsContext dbContext)
                 SolvedCategoryIds = "",
                 WordOrder = GenerateWordOrder(puzzle)
             };
+
             dbContext.GameStates.Add(state);
         }
 
