@@ -24,8 +24,18 @@ public class Guess
     {
         var sessionIds = httpContext.GetGameSessionIds();
 
-        var state = await dbContext.GameStates
-            .FirstOrDefaultAsync(gs => sessionIds.Contains(gs.SessionId) && gs.PuzzleId == id);
+        GameState? state = null;
+
+        foreach (var sessionId in sessionIds)
+        {
+            state = await dbContext.GameStates
+                .FirstOrDefaultAsync(gs =>
+                    gs.SessionId == sessionId &&
+                    gs.PuzzleId == id);
+
+            if (state is not null)
+                break;
+        }
 
         if (state is null)
             return Results.BadRequest("No session found for this puzzle.");

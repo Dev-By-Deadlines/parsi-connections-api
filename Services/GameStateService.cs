@@ -42,12 +42,18 @@ public class GameStateService(ConnectionsContext dbContext)
 
     public async Task<List<GameState>> GetAllPlayerGameStatesAsync(List<string> sessionIds)
     {
-        var states = await dbContext.GameStates
-            .ToListAsync();
+        var states = new List<GameState>();
 
-        return states
-            .Where(gs => sessionIds.Contains(gs.SessionId))
-            .ToList();
+        foreach (var sessionId in sessionIds)
+        {
+            var result = await dbContext.GameStates
+                .Where(gs => gs.SessionId == sessionId)
+                .ToListAsync();
+
+            states.AddRange(result);
+        }
+
+        return states;
     }
 
     private static readonly char[] Chars = "abcdefghijklmnopqrstuvwxyz0123456789".ToCharArray();
